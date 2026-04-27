@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link2, Copy, Check, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../hooks/useAuth';
 
 interface SharedLink {
   share_id: string;
@@ -9,16 +10,20 @@ interface SharedLink {
 }
 
 export default function SharedLinksList() {
+  const { user } = useAuth();
   const [links, setLinks]       = useState<SharedLink[]>([]);
   const [open, setOpen]         = useState(false);
   const [copiedId, setCopiedId] = useState('');
   const [loading, setLoading]   = useState(false);
 
   const load = async () => {
+    if (!user) return;
+    
     setLoading(true);
     const { data } = await supabase
       .from('shared_results')
       .select('share_id, project_name, created_at')
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(20);
     setLinks(data || []);
