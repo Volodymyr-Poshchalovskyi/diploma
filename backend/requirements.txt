@@ -23,7 +23,7 @@ markdown-it-py==4.0.0
 mdurl==0.1.2
 mmh3==5.2.1
 multidict==6.7.1
-numpy==2.4.4
+numpy
 openpyxl==3.1.5
 packaging==26.2
 pillow==12.2.0
@@ -46,7 +46,7 @@ reportlab==4.4.10
 requests==2.33.1
 rich==14.3.4
 rsa==4.9.1
-scipy==1.17.1
+scipy
 six==1.17.0
 starlette==1.0.0
 storage3==2.29.0
@@ -56,7 +56,7 @@ supabase==2.29.0
 supabase-auth==2.29.0
 supabase-functions==2.29.0
 tenacity==9.1.4
-tmm==0.2.0
+tmm
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 urllib3==2.6.3
@@ -64,4 +64,4 @@ uvicorn==0.46.0
 websockets==15.0.1
 yarl==1.23.0
 zstandard==0.25.0
-pydantic-settings==2.13.3
+pydantic-settings>=2.0.0
