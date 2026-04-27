@@ -1,29 +1,42 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
-export default function LoginPage() {
-  const [email, setEmail] = useState('');
+export default function UpdatePasswordPage() {
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  // Додаткова перевірка: якщо юзер зайшов сюди без токена відновлення,
+  // його краще перенаправити на логін
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate('/login');
+      }
+    });
+  }, [navigate]);
+
+  const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    if (password !== confirmPassword) {
+      return setError('Паролі не співпадають');
+    }
+
+    setLoading(true);
+    const { error } = await supabase.auth.updateUser({
+      password: password
     });
 
     if (error) {
       setError(error.message);
       setLoading(false);
     } else {
-      // Якщо успіх, редиректимо на головну
+      // Пароль успішно оновлено, перекидаємо в робочу зону
       navigate('/');
     }
   };
@@ -31,44 +44,35 @@ export default function LoginPage() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h1 style={{ marginBottom: '0.5rem' }}>Composite EM</h1>
-        <p style={{ color: '#666', marginBottom: '2rem' }}>
-          Вхід в платформу
-        </p>
-
+        <h1 style={{ marginBottom: '0.5rem' }}>Встановіть новий пароль</h1>
+        
         {error && <div style={styles.error}>{error}</div>}
 
-        <form onSubmit={handleLogin}>
-          <label style={styles.label}>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            required
-            style={styles.input}
-          />
-
-          <label style={styles.label}>Пароль</label>
+        <form onSubmit={handleUpdate}>
+          <label style={styles.label}>Новий пароль</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Ваш пароль"
+            placeholder="Мінімум 6 символів"
+            required
+            minLength={6}
+            style={styles.input}
+          />
+
+          <label style={styles.label}>Підтвердіть новий пароль</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             required
             style={styles.input}
           />
 
           <button type="submit" disabled={loading} style={styles.button}>
-            {loading ? 'Вхід...' : 'Увійти'}
+            {loading ? 'Оновлення...' : 'Зберегти новий пароль'}
           </button>
         </form>
-
-        <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
-          <Link to="/register" style={{ color: '#01696f' }}>Створити акаунт</Link>
-          {/* Роут для відновлення пароля додамо на наступному кроці */}
-          <Link to="/forgot-password" style={{ color: '#666' }}>Забули пароль?</Link>
-        </div>
       </div>
     </div>
   );
