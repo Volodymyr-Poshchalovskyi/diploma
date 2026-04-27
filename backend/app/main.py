@@ -7,7 +7,7 @@ app = FastAPI(title="Composite EM API", version="0.1.0")
 # Додаємо Vercel у список дозволених джерел
 origins = [
     "http://localhost:5173",                 # Для локальної розробки
-    "https://твій-проект.vercel.app",        # ВАЖЛИВО: Твій лінк з Vercel (БЕЗ слеша в кінці!)
+    "https://diploma-3gkl.vercel.app",        # ВАЖЛИВО: Твій лінк з Vercel (БЕЗ слеша в кінці!)
 ]
 
 app.add_middleware(
