@@ -81,7 +81,7 @@ export default function ResultChart({ result, isLoading }: Props) {
             <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
             <XAxis dataKey="freq" label={{ value: 'Частота (ГГц)', position: 'insideBottom', offset: -15 }} tick={{ fontSize: 11 }} />
             <YAxis domain={yDomain} tickFormatter={yFormatter} tick={{ fontSize: 11 }} width={55} />
-            <Tooltip formatter={(v: number) => tooltipFormatter(v)} labelFormatter={l => `${l} ГГц`} />
+            <Tooltip formatter={(v: any) => tooltipFormatter(Number(v))} labelFormatter={l => `${l} ГГц`} />
             <Legend verticalAlign="top" />
             <ReferenceLine y={useDb ? -15 : 50} stroke="#ccc" strokeDasharray="4 4" label={{ value: useDb ? '-15 dB' : '50%', fontSize: 10, fill: '#bbb', position: 'right' }} />
             <Line type="monotone" dataKey="R" stroke="#ef4444" dot={false} strokeWidth={2} name="Відбиття R" />

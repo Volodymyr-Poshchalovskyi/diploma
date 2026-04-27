@@ -21,7 +21,7 @@ interface Props {
   };
 }
 
-export default function ExportPanel({ result, sweepResult, layers, projectName, settings }: Props) {
+export default function ExportPanel({ result, layers, projectName, settings }: Props) {
   const [exporting, setExporting] = useState<string | null>(null);
   const { setLayers, setProjectName, updateSettings } = useProjectStore();
 
