@@ -10,7 +10,7 @@ export default function RegisterPage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   
-  const navigate = useNavigate();
+
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();

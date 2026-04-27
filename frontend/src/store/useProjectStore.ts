@@ -2,15 +2,7 @@ import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import type { Layer, ComputeResult, SweepResult, ProjectSettings } from '../types';
 
-export interface ProjectSettings {
-  mode: 'freespace' | 'waveguide';
-  polarization: 'TE' | 'TM';
-  angleDeg: number;
-  freqStart: number;
-  freqStop: number;
-  freqPoints: number;
-  waveguideA: number;
-}
+
 
 interface ProjectState {
   projectName: string;

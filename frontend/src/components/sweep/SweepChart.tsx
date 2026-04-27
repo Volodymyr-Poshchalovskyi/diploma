@@ -52,8 +52,8 @@ export default function SweepChart({ sweep, metric }: Props) {
             width={45}
           />
           <Tooltip
-            formatter={(v: number, name: string) => [`${v.toFixed(1)}%`, `${name}${unit}`]}
-            labelFormatter={l => `${l} GHz`}
+            formatter={(v: any, name: string) => [`${v.toFixed(1)}%`, `${name}${unit}`]}
+  labelFormatter={l => `${l} GHz`}
           />
           <Legend verticalAlign="top" />
           {sweep.results.map((r, i) => (

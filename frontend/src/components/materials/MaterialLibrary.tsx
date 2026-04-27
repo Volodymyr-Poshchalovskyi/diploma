@@ -302,7 +302,7 @@ function MaterialRow({ m, onEdit, onDelete, isCustom }: {
 }
 
 // ── Apply to layer dropdown ───────────────────────────────────────────────
-function ApplyDropdown({ m, layers, onApply }: { m: Material; layers: any[]; onApply: (id: string) => void }) {
+function ApplyDropdown({ layers, onApply }: { m: Material; layers: any[]; onApply: (id: string) => void }) {
   const [open, setOpen]     = useState(false);
   const [done, setDone]     = useState(false);
   const ref = useRef<HTMLDivElement>(null);

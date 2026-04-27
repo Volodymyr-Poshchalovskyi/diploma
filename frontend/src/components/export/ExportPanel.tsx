@@ -122,7 +122,7 @@ export default function ExportPanel({ result, layers, projectName, settings }: P
     setExporting('pdf');
     try {
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      const toDb = (v: number) => v > 1e-6 ? (10 * Math.log10(v)).toFixed(2) : '-60.00';
+      
       const pageW = doc.internal.pageSize.getWidth();
 
       doc.setFillColor(1, 105, 111);
