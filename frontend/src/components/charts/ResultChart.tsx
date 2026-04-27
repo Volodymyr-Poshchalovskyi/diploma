@@ -3,6 +3,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer, ReferenceLine,
 } from 'recharts';
+import { BarChart2, Loader2 } from 'lucide-react';
 import type { ComputeResult } from '../../types';
 
 interface Props {
@@ -10,7 +11,6 @@ interface Props {
   isLoading: boolean;
 }
 
-// Convert linear power ratio to dB, floor at -60 dB
 const toDb = (v: number) => v > 1e-6 ? 10 * Math.log10(v) : -60;
 
 export default function ResultChart({ result, isLoading }: Props) {
@@ -18,22 +18,25 @@ export default function ResultChart({ result, isLoading }: Props) {
 
   if (isLoading) {
     return (
-      <div style={s.placeholder}>
-        <span style={{ fontSize: '2rem' }}>⏳</span>
-        <p>Computing...</p>
+      <div style={styles.placeholder}>
+        <Loader2 size={48} color="var(--primary)" style={{ animation: 'spin 1s linear infinite' }} />
+        <p style={{ color: 'var(--text-muted)', marginTop: '1rem' }}>Розрахунок...</p>
       </div>
     );
   }
 
   if (!result) {
     return (
-      <div style={s.placeholder}>
-        <span style={{ fontSize: '2rem' }}>📊</span>
-        <p style={{ color: '#888' }}>Configure layers and click <strong>Run Calculation</strong></p>
+      <div style={styles.placeholder}>
+        <BarChart2 size={48} color="#d1d5db" strokeWidth={1.5} />
+        <p style={{ color: 'var(--text-muted)', marginTop: '1rem' }}>
+          Налаштуйте шари та натисніть <strong>Розрахувати</strong>
+        </p>
       </div>
     );
   }
 
+  // ... (весь інший код ResultChart залишається без змін)
   const chartData = result.frequencies.map((f, i) => {
     const R = result.R[i];
     const T = result.T[i];
@@ -51,67 +54,56 @@ export default function ResultChart({ result, isLoading }: Props) {
   const tooltipFormatter = (v: number) => useDb ? `${v.toFixed(1)} dB` : `${v.toFixed(1)}%`;
 
   return (
-    <div>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>R / T / A vs Frequency</h2>
+        <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: 'var(--text-main)' }}>R / T / A vs Частота</h2>
         <button
           onClick={() => setUseDb(d => !d)}
           style={{
-            padding: '0.3rem 0.75rem',
-            border: '1px solid #ddd',
-            borderRadius: '6px',
-            background: useDb ? '#01696f' : '#f5f5f5',
-            color: useDb ? '#fff' : '#444',
+            padding: '4px 10px',
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius-sm)',
+            background: useDb ? 'var(--primary)' : '#fff',
+            color: useDb ? '#fff' : 'var(--text-main)',
             cursor: 'pointer',
             fontSize: '0.8rem',
+            fontWeight: 500,
+            transition: 'all 0.2s'
           }}
         >
-          {useDb ? '↩ Linear' : '📉 dB'}
+          {useDb ? 'Linear' : 'dB Scale'}
         </button>
       </div>
 
-      <ResponsiveContainer width="100%" height={420}>
-        <LineChart data={chartData} margin={{ top: 5, right: 30, left: 10, bottom: 25 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-          <XAxis
-            dataKey="freq"
-            label={{ value: 'Frequency (GHz)', position: 'insideBottom', offset: -15 }}
-            tick={{ fontSize: 11 }}
-          />
-          <YAxis
-            domain={yDomain}
-            tickFormatter={yFormatter}
-            tick={{ fontSize: 11 }}
-            width={55}
-          />
-          <Tooltip
-            formatter={(v: number) => tooltipFormatter(v)}
-            labelFormatter={l => `${l} GHz`}
-          />
-          <Legend verticalAlign="top" />
-          <ReferenceLine y={useDb ? -15 : 50} stroke="#ccc" strokeDasharray="4 4" label={{ value: useDb ? '-15 dB' : '50%', fontSize: 10, fill: '#bbb', position: 'right' }} />
-          <Line type="monotone" dataKey="R" stroke="#e53e3e" dot={false} strokeWidth={2} name="Reflection R" />
-          <Line type="monotone" dataKey="T" stroke="#38a169" dot={false} strokeWidth={2} name="Transmission T" />
-          <Line type="monotone" dataKey="A" stroke="#3182ce" dot={false} strokeWidth={2} name="Absorption A" />
-        </LineChart>
-      </ResponsiveContainer>
-
-      <p style={{ fontSize: '0.72rem', color: '#aaa', marginTop: '0.5rem', textAlign: 'right' }}>
-        {useDb ? 'dB scale: 10·log₁₀(ratio), floor −60 dB' : 'Linear scale: % of incident power'}
-      </p>
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={chartData} margin={{ top: 5, right: 30, left: 10, bottom: 25 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+            <XAxis dataKey="freq" label={{ value: 'Частота (ГГц)', position: 'insideBottom', offset: -15 }} tick={{ fontSize: 11 }} />
+            <YAxis domain={yDomain} tickFormatter={yFormatter} tick={{ fontSize: 11 }} width={55} />
+            <Tooltip formatter={(v: number) => tooltipFormatter(v)} labelFormatter={l => `${l} ГГц`} />
+            <Legend verticalAlign="top" />
+            <ReferenceLine y={useDb ? -15 : 50} stroke="#ccc" strokeDasharray="4 4" label={{ value: useDb ? '-15 dB' : '50%', fontSize: 10, fill: '#bbb', position: 'right' }} />
+            <Line type="monotone" dataKey="R" stroke="#ef4444" dot={false} strokeWidth={2} name="Відбиття R" />
+            <Line type="monotone" dataKey="T" stroke="#10b981" dot={false} strokeWidth={2} name="Пропускання T" />
+            <Line type="monotone" dataKey="A" stroke="#3b82f6" dot={false} strokeWidth={2} name="Поглинання A" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
 
-const s: Record<string, React.CSSProperties> = {
+const styles: Record<string, React.CSSProperties> = {
   placeholder: {
-    height: '420px',
+    height: '100%',
+    minHeight: '400px',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#fafafa',
-    borderRadius: '12px',
-    border: '2px dashed #e0e0e0',
+    background: 'var(--bg-page)',
+    borderRadius: 'var(--radius-md)',
+    border: '2px dashed var(--border-color)',
   },
 };

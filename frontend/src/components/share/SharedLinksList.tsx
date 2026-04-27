@@ -49,7 +49,7 @@ export default function SharedLinksList() {
   };
 
   return (
-    <div style={{ marginTop: '0.5rem' }}>
+    <div style={{ position: 'relative', marginTop: '0.5rem' }}>
       <button
         onClick={() => setOpen(o => !o)}
         style={{
@@ -66,8 +66,14 @@ export default function SharedLinksList() {
 
       {open && (
         <div style={{
-          border: '1px solid #e5e7eb', borderTop: 'none', borderRadius: '0 0 6px 6px',
+          position: 'absolute',
+          bottom: 'calc(100% + 4px)',
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          border: '1px solid #e5e7eb', borderRadius: '6px',
           background: '#fff', maxHeight: '200px', overflowY: 'auto',
+          boxShadow: '0 -4px 16px rgba(0,0,0,0.1)',
         }}>
           {loading && (
             <p style={{ padding: '0.75rem', fontSize: '0.75rem', color: '#9ca3af', textAlign: 'center' }}>

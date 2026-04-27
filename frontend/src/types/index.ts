@@ -1,3 +1,13 @@
+export interface ProjectSettings {
+  mode: 'freespace' | 'waveguide';
+  polarization: 'TE' | 'TM';
+  angleDeg: number;
+  freqStart: number;
+  freqStop: number;
+  freqPoints: number;
+  waveguideA: number;
+}
+
 export interface Layer {
   id: string;
   thickness_mm: number;

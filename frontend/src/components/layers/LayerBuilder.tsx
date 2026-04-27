@@ -1,57 +1,79 @@
 import { DndContext, closestCenter, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { GripVertical, X, Plus } from 'lucide-react';
 import { useProjectStore } from '../../store/useProjectStore';
 import type { Layer } from '../../types';
 import { MaterialLibraryDropdown } from '../materials/MaterialLibrary';
 
 function SortableLayer({ layer }: { layer: Layer }) {
   const { updateLayer, removeLayer } = useProjectStore();
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: layer.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: layer.id });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
-    background: '#f9f9f9',
-    border: '1px solid #e0e0e0',
-    borderRadius: '8px',
-    padding: '0.75rem',
-    marginBottom: '0.5rem',
+    background: '#fff',
+    border: `1px solid ${isDragging ? 'var(--primary)' : 'var(--border-color)'}`,
+    borderRadius: 'var(--radius-md)',
+    padding: 'var(--space-sm) var(--space-md)',
+    marginBottom: 'var(--space-sm)',
+    boxShadow: isDragging ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
+    zIndex: isDragging ? 1 : 0,
+    position: 'relative',
   };
 
-  const field = (label: string, key: keyof Layer, step = 0.1) => (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-      <label style={{ fontSize: '0.75rem', color: '#555', minWidth: '90px' }}>{label}</label>
+  const InputField = ({ label, keyName, step }: { label: string, keyName: keyof Layer, step: number }) => (
+    <div style={styles.inputGroup}>
+      <label style={styles.label}>{label}</label>
       <input
         type="number"
         step={step}
-        value={layer[key] as number}
-        onChange={e => updateLayer(layer.id, { [key]: parseFloat(e.target.value) || 0 })}
-        style={{ width: '90px', padding: '0.2rem 0.4rem', border: '1px solid #ddd', borderRadius: '4px', fontSize: '0.85rem', textAlign: 'right' }}
+        value={layer[keyName] as number}
+        onChange={e => updateLayer(layer.id, { [keyName]: parseFloat(e.target.value) || 0 })}
+        style={styles.input}
       />
     </div>
   );
 
   return (
     <div ref={setNodeRef} style={style}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-        <span {...attributes} {...listeners} style={{ cursor: 'grab', fontSize: '1rem', color: '#aaa' }}>⠿</span>
-        <input
-          value={layer.label || ''}
-          onChange={e => updateLayer(layer.id, { label: e.target.value })}
-          style={{ flex: 1, margin: '0 0.5rem', padding: '0.2rem 0.4rem', border: '1px solid #ddd', borderRadius: '4px', fontWeight: 600, fontSize: '0.85rem' }}
-        />
-        <button onClick={() => removeLayer(layer.id)} style={{ color: '#e53e3e', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
-        
+      {/* Шапка картки шару */}
+      <div style={styles.layerHeader}>
+        <div style={styles.layerHeaderLeft}>
+          <div {...attributes} {...listeners} style={styles.dragHandle}>
+            <GripVertical size={16} />
+          </div>
+          <input
+            value={layer.label || ''}
+            onChange={e => updateLayer(layer.id, { label: e.target.value })}
+            style={styles.layerNameInput}
+            placeholder="Назва шару"
+          />
+        </div>
+        <button onClick={() => removeLayer(layer.id)} style={styles.deleteBtn}>
+          <X size={16} />
+        </button>
       </div>
-      <div style={{ marginBottom: '0.5rem' }}>
-  <MaterialLibraryDropdown layerId={layer.id} />
-</div>
-      {field('Thickness (mm)', 'thickness_mm', 0.1)}
-      {field('ε\'  (eps_real)', 'eps_real', 0.1)}
-      {field('ε\'\'  (eps_imag)', 'eps_imag', 0.01)}
-      {field('μ\'  (mu_real)', 'mu_real', 0.1)}
-      {field('μ\'\'  (mu_imag)', 'mu_imag', 0.01)}
+
+      {/* Бібліотека матеріалів + Товщина */}
+      <div style={styles.gridRow}>
+        <div style={{ flex: 1 }}>
+          <label style={styles.label}>Матеріал</label>
+          <MaterialLibraryDropdown layerId={layer.id} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <InputField label="Товщина (мм)" keyName="thickness_mm" step={0.1} />
+        </div>
+      </div>
+
+      {/* Параметри ε та μ (Сітка 2x2) */}
+      <div style={styles.paramsGrid}>
+        <InputField label="ε' (real)" keyName="eps_real" step={0.1} />
+        <InputField label="ε'' (imag)" keyName="eps_imag" step={0.01} />
+        <InputField label="μ' (real)" keyName="mu_real" step={0.1} />
+        <InputField label="μ'' (imag)" keyName="mu_imag" step={0.01} />
+      </div>
     </div>
   );
 }
@@ -70,13 +92,19 @@ export default function LayerBuilder() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-        <h3 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#444' }}>Layers</h3>
-        <button onClick={addLayer} style={{ padding: '0.3rem 0.75rem', background: '#01696f', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' }}>+ Add</button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
+        <h3 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Структура шарів</h3>
+        <button onClick={addLayer} style={styles.addBtn}>
+          <Plus size={14} /> Додати шар
+        </button>
       </div>
+      
       {layers.length === 0 && (
-        <p style={{ color: '#aaa', fontSize: '0.85rem', textAlign: 'center', padding: '1rem 0' }}>No layers yet. Click + Add.</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', padding: '1rem 0' }}>
+          Немає шарів. Додайте перший шар.
+        </p>
       )}
+
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={layers.map(l => l.id)} strategy={verticalListSortingStrategy}>
           {layers.map(layer => <SortableLayer key={layer.id} layer={layer} />)}
@@ -85,3 +113,19 @@ export default function LayerBuilder() {
     </div>
   );
 }
+
+const styles: Record<string, React.CSSProperties> = {
+  addBtn: { display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 12px', background: '#f3f4f6', color: '#374151', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 500 },
+  layerHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-sm)' },
+  layerHeaderLeft: { display: 'flex', alignItems: 'center', gap: '8px', flex: 1 },
+  dragHandle: { cursor: 'grab', color: '#9ca3af', display: 'flex', alignItems: 'center' },
+  layerNameInput: { flex: 1, padding: '4px 8px', border: '1px solid transparent', borderRadius: '4px', fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-main)', background: 'transparent', outline: 'none', transition: 'border 0.2s' },
+  deleteBtn: { color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', borderRadius: '4px' },
+  
+  gridRow: { display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-sm)' },
+  paramsGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-xs) var(--space-sm)', background: '#f9fafb', padding: '8px', borderRadius: '6px', border: '1px solid var(--border-color)' },
+  
+  inputGroup: { display: 'flex', flexDirection: 'column', gap: '2px' },
+  label: { fontSize: '0.75rem', color: 'var(--text-muted)' },
+  input: { width: '100%', padding: '6px 8px', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.85rem', color: 'var(--text-main)', boxSizing: 'border-box' },
+};

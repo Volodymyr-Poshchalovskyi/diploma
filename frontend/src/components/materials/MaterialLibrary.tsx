@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { Plus, Pencil, Trash2, Check, X, ChevronDown } from 'lucide-react';
+import { Plus, Pencil, Trash2, Check, X, ChevronDown, BookOpen } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useProjectStore } from '../../store/useProjectStore';
 import type { Material } from '../../types';
+
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -47,35 +48,45 @@ export function MaterialLibraryDropdown({ layerId }: { layerId: string }) {
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button onClick={() => setOpen(o => !o)} style={{
-        display: 'flex', alignItems: 'center', gap: '0.25rem',
-        fontSize: '0.72rem', padding: '0.2rem 0.5rem',
-        border: '1px solid #d1d5db', borderRadius: '4px',
-        background: applied ? '#f0fdf4' : '#f9fafb',
-        color: applied ? '#166534' : '#6b7280', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
+        fontSize: '0.85rem', padding: '6px 8px',
+        border: '1px solid var(--border-color)', borderRadius: '4px',
+        background: applied ? '#f0fdf4' : '#fff',
+        color: applied ? '#166534' : 'var(--text-main)', 
+        cursor: 'pointer', transition: 'all 0.2s'
       }}>
-        {applied ? <><Check size={11} />{applied}</> : <>📚 Library <ChevronDown size={11} /></>}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          {applied ? <Check size={14} /> : <BookOpen size={14} color="var(--text-muted)" />}
+          <span>{applied || 'Обрати з бази'}</span>
+        </div>
+        <ChevronDown size={14} color="var(--text-muted)" />
       </button>
+
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 200,
-          background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.12)', minWidth: '220px',
+          background: '#fff', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.12)', width: '100%', minWidth: '220px',
           maxHeight: '240px', overflowY: 'auto', padding: '4px 0',
         }}>
-          {materials.map(m => (
-            <button key={m.id} onClick={() => apply(m)} style={{
-              display: 'flex', flexDirection: 'column', width: '100%', textAlign: 'left',
-              padding: '0.4rem 0.75rem', border: 'none', background: 'none', cursor: 'pointer',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#f0fdf4')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-            >
-              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#111827' }}>{m.name}</span>
-              <span style={{ fontSize: '0.7rem', color: '#9ca3af', fontFamily: 'monospace' }}>
-                ε={m.eps_real}{m.eps_imag ? `+${m.eps_imag}j` : ''} · μ={m.mu_real}
-              </span>
-            </button>
-          ))}
+          {materials.length === 0 ? (
+             <div style={{ padding: '8px 12px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>Завантаження...</div>
+          ) : (
+            materials.map(m => (
+              <button key={m.id} onClick={() => apply(m)} style={{
+                display: 'flex', flexDirection: 'column', width: '100%', textAlign: 'left',
+                padding: '8px 12px', border: 'none', background: 'none', cursor: 'pointer',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#f9fafb')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+              >
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>{m.name}</span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--mono)' }}>
+                  ε={m.eps_real}{m.eps_imag ? `+${m.eps_imag}j` : ''} · μ={m.mu_real}
+                </span>
+              </button>
+            ))
+          )}
         </div>
       )}
     </div>

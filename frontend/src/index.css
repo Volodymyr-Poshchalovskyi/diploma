@@ -39,3 +39,29 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+:root {
+  /* Твої існуючі змінні... */
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  /* НОВІ ЗМІННІ ДЛЯ ВІДСТУПІВ (Spacing) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* НОВІ ЗМІННІ ДЛЯ РАДІУСІВ ТА КОЛЬОРІВ */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  --primary: #01696f;
+  --primary-hover: #015257;
+  --bg-page: #f3f4f6;
+  --bg-panel: #ffffff;
+  --border-color: #e5e7eb;
+  --text-main: #111827;
+  --text-muted: #6b7280;
+}

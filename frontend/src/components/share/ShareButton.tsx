@@ -87,20 +87,20 @@ export default function ShareButton({ result, layers, projectName, settings }: P
           {loading ? 'Generating link...' : 'Create share link'}
         </button>
       ) : (
-        <div style={{ display: 'flex', gap: '0.4rem' }}>
+        <div style={{ display: 'flex', gap: '0.4rem', width: '100%', boxSizing: 'border-box' }}>
           <input
             readOnly
             value={shareUrl}
             style={{
-              flex: 1, padding: '0.45rem 0.6rem', border: '1px solid #e5e7eb',
+              flex: 1, minWidth: 0, padding: '0.45rem 0.6rem', border: '1px solid #e5e7eb',
               borderRadius: '6px', fontSize: '0.75rem', color: '#374151',
-              background: '#f9fafb', outline: 'none',
+              background: '#f9fafb', outline: 'none', boxSizing: 'border-box'
             }}
           />
           <button
             onClick={copy}
             style={{
-              padding: '0.45rem 0.65rem', border: '1px solid #e5e7eb', borderRadius: '6px',
+              flexShrink: 0, padding: '0.45rem 0.65rem', border: '1px solid #e5e7eb', borderRadius: '6px',
               background: copied ? '#f0fdf4' : '#fff', color: copied ? '#166534' : '#374151',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem',
               fontSize: '0.75rem', fontWeight: 500,
