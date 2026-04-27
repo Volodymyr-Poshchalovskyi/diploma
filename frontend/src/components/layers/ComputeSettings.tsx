@@ -76,7 +76,7 @@ export default function ComputeSettings({
 
 const styles: Record<string, React.CSSProperties> = {
   title: { margin: '0 0 var(--space-md)', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)' },
-  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: 'var(--space-sm)' },
+  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 'var(--space-sm)' },
   inputGroup: { display: 'flex', flexDirection: 'column', gap: '4px' },
   label: { fontSize: '0.75rem', color: 'var(--text-muted)' },
   input: { width: '100%', padding: '6px 8px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', fontSize: '0.85rem', color: 'var(--text-main)', background: '#fff', boxSizing: 'border-box' }

@@ -6,7 +6,7 @@ import { useProjectStore } from '../../store/useProjectStore';
 import type { Layer } from '../../types';
 import { MaterialLibraryDropdown } from '../materials/MaterialLibrary';
 
-function SortableLayer({ layer }: { layer: Layer }) {
+function SortableLayer({ layer, index }: { layer: Layer, index: number }) {
   const { updateLayer, removeLayer } = useProjectStore();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: layer.id });
 
@@ -19,7 +19,7 @@ function SortableLayer({ layer }: { layer: Layer }) {
     padding: 'var(--space-sm) var(--space-md)',
     marginBottom: 'var(--space-sm)',
     boxShadow: isDragging ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
-    zIndex: isDragging ? 1 : 0,
+    zIndex: isDragging ? 999 : 100 - index,
     position: 'relative',
   };
 
@@ -107,7 +107,7 @@ export default function LayerBuilder() {
 
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={layers.map(l => l.id)} strategy={verticalListSortingStrategy}>
-          {layers.map(layer => <SortableLayer key={layer.id} layer={layer} />)}
+          {layers.map((layer, index) => <SortableLayer key={layer.id} layer={layer} index={index} />)}
         </SortableContext>
       </DndContext>
     </div>
