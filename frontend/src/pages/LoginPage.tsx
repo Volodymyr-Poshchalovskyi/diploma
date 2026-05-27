@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import EmailAutocomplete from '../components/layout/EmailAutocomplete';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -40,10 +41,9 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin}>
           <label style={styles.label}>Email</label>
-          <input
-            type="email"
+          <EmailAutocomplete
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={setEmail}
             placeholder="you@example.com"
             required
             style={styles.input}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import EmailAutocomplete from '../components/layout/EmailAutocomplete';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -22,7 +23,7 @@ export default function RegisterPage() {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -33,6 +34,8 @@ export default function RegisterPage() {
 
     if (error) {
       setError(error.message);
+    } else if (data?.user?.identities && data.user.identities.length === 0) {
+      setError('Користувач з такою поштою вже існує');
     } else {
       setMessage('Успіх! Перевірте вашу пошту для підтвердження акаунту.');
       // Очищуємо форму
@@ -52,43 +55,47 @@ export default function RegisterPage() {
         </p>
 
         {error && <div style={styles.error}>{error}</div>}
-        {message && <div style={styles.success}>{message}</div>}
 
-        <form onSubmit={handleRegister}>
-          <label style={styles.label}>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            required
-            style={styles.input}
-          />
-          
-          <label style={styles.label}>Пароль</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Мінімум 6 символів"
-            required
-            minLength={6}
-            style={styles.input}
-          />
+        {message ? (
+          <div style={styles.success}>
+            {message}
+          </div>
+        ) : (
+          <form onSubmit={handleRegister}>
+            <label style={styles.label}>Email</label>
+            <EmailAutocomplete
+              value={email}
+              onChange={setEmail}
+              placeholder="you@example.com"
+              required
+              style={styles.input}
+            />
+            
+            <label style={styles.label}>Пароль</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Мінімум 6 символів"
+              required
+              minLength={6}
+              style={styles.input}
+            />
 
-          <label style={styles.label}>Підтвердіть пароль</label>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            style={styles.input}
-          />
+            <label style={styles.label}>Підтвердіть пароль</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              style={styles.input}
+            />
 
-          <button type="submit" disabled={loading} style={styles.button}>
-            {loading ? 'Реєстрація...' : 'Створити акаунт'}
-          </button>
-        </form>
+            <button type="submit" disabled={loading} style={styles.button}>
+              {loading ? 'Реєстрація...' : 'Створити акаунт'}
+            </button>
+          </form>
+        )}
 
         <p style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.9rem' }}>
           Вже маєте акаунт? <Link to="/login" style={{ color: '#01696f' }}>Увійти</Link>

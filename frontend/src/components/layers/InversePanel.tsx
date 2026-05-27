@@ -80,6 +80,12 @@ export default function InversePanel() {
       </div>
 
       <p style={styles.label}>Цільові параметри (dB):</p>
+      <div style={{ ...styles.targetGrid, marginBottom: '4px', color: 'var(--text-muted)' }}>
+        <span style={{ fontSize: '0.65rem' }}>Парам.</span>
+        <span style={{ fontSize: '0.65rem', paddingLeft: '2px' }}>Поч. (GHz)</span>
+        <span style={{ fontSize: '0.65rem', paddingLeft: '2px' }}>Кінц. (GHz)</span>
+        <span style={{ fontSize: '0.65rem', paddingLeft: '2px' }}>Значення (dB)</span>
+      </div>
       {targets.map((t, i) => (
         <div key={i} style={styles.targetGrid}>
           <select value={t.param} onChange={e => updateTarget(i, 'param', e.target.value)} style={styles.input}>
